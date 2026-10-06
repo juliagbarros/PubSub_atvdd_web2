@@ -9,6 +9,14 @@ services:
     depends_on:
       - kafka1
 
+  write-img:
+    build: write-img-app
+    container_name: write-img
+    volumes:
+      - ./appdata:/appdata
+    depends_on:
+      - kafka1
+
   rotate:
     build: rotate-app
     container_name: rotate
