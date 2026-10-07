@@ -16,6 +16,13 @@ services:
       - ./appdata:/appdata
     depends_on:
       - kafka1
+  notificador:
+    build: notificador-app
+    container_name: notificador
+    env_file:
+      - .env
+    depends_on:
+      - kafka1
 
   rotate:
     build: rotate-app

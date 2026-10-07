@@ -1,5 +1,5 @@
 from PIL import Image, ImageOps
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, Producer, KafkaError
 import json
 import os
 from time import sleep
@@ -35,6 +35,8 @@ c = Consumer({
 c.subscribe(['image'])
 #{"timestamp": 1649288146.3453217, "new_file": "9PKAyoN.jpeg"}
 
+p= Producer({'bootstrap.servers': 'kafka1:19091,kafka2:19092,kafka3:19093'})
+
 try:
     while True:
         msg = c.poll(0.1)
@@ -45,6 +47,9 @@ try:
             filename = data['new_file']
             logging.warning(f"READING {filename}")
             create_grayscale(IN_FOLDER + filename)
+            mensagem = {'filename': filename, 'operation': 'convertido para preto e branco'}
+            p.produce('notificacao', json.dumps(mensagem).encode('utf-8'))
+            p.flush()
             logging.warning (f"ENDING {filename}")
         elif msg.error().code() == KafkaError._PARTITION_EOF:
             logging.warning('End of partition reached {0}/{1}'
